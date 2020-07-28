@@ -28,6 +28,7 @@
 #include <cpu.h>
 #include <instr_emul.h>
 #include <vmx.h>
+#include <vmx_trace.h>
 
 /**
  * @brief vcpu
@@ -196,6 +197,11 @@ struct msr_store_area {
 	uint32_t count;	/* actual count of entries to be loaded/restored during VMEntry/VMExit */
 };
 
+struct vmswitch_trace {
+	uint64_t reason;
+	uint64_t ts[VMX_TRACE_NUM_STAGES];
+};
+
 struct acrn_vcpu_arch {
 	/* vmcs region for this vcpu, MUST be 4KB-aligned */
 	uint8_t vmcs[PAGE_SIZE];
@@ -250,6 +256,9 @@ struct acrn_vcpu_arch {
 
 	/* EOI_EXIT_BITMAP buffer, for the bitmap update */
 	uint64_t eoi_exit_bitmap[EOI_EXIT_BITMAP_SIZE >> 6U];
+
+	bool trace;
+	struct vmswitch_trace *trace_hva;
 } __aligned(PAGE_SIZE);
 
 struct acrn_vm;

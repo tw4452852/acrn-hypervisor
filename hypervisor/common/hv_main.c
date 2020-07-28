@@ -105,6 +105,7 @@ void vcpu_thread(struct thread_object *obj)
 		}
 		/* Dispatch handler */
 		ret = vmexit_handler(vcpu);
+		vmx_trace_add(vcpu, VMX_TRACE_VMEXIT_HANDLER_POST);
 		if (ret < 0) {
 			pr_fatal("dispatch VM exit handler failed for reason"
 				" %d, ret = %d!", basic_exit_reason, ret);

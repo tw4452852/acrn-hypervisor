@@ -625,6 +625,7 @@ int32_t run_vcpu(struct acrn_vcpu *vcpu)
 		/* Mitigation for MDS vulnerability, overwrite CPU internal buffers */
 		cpu_internal_buffers_clear();
 
+		vmx_trace_add(vcpu, VMX_TRACE_VMENTER_PRE);
 		/* Resume the VM */
 		status = vmx_vmrun(ctx, VM_RESUME, ibrs_type);
 	}
@@ -644,6 +645,7 @@ int32_t run_vcpu(struct acrn_vcpu *vcpu)
 	/* Obtain VM exit reason */
 	vcpu->arch.exit_reason = exec_vmread32(VMX_EXIT_REASON);
 
+	vmx_trace_add(vcpu, VMX_TRACE_VMEXIT_HANDLER_PRE);
 	if (status != 0) {
 		/* refer to 64-ia32 spec section 24.9.1 volume#3 */
 		if ((vcpu->arch.exit_reason & VMX_VMENTRY_FAIL) != 0U) {

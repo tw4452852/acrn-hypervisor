@@ -13,6 +13,7 @@
 #include <hypercall.h>
 #include <trace.h>
 #include <logmsg.h>
+#include <vmx_trace.h>
 
 static spinlock_t vmm_hypercall_lock = {
 	.head = 0U,
@@ -225,6 +226,11 @@ int32_t vmcall_vmexit_handler(struct acrn_vcpu *vcpu)
 	struct acrn_vm *vm = vcpu->vm;
 	/* hypercall ID from guest*/
 	uint64_t hypcall_id = vcpu_get_gpreg(vcpu, CPU_REG_R8);
+
+	if (hypcall_id == HC_TRACE_VMSWITCH) {
+		vmx_trace_toggle(vcpu);
+		return 0;
+	}
 
 	if (!is_hypercall_from_ring0()) {
 		pr_err("hypercall 0x%lx is only allowed from RING-0!\n", hypcall_id);
